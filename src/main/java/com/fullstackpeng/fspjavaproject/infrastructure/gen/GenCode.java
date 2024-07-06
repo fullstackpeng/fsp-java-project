@@ -54,6 +54,15 @@ public class GenCode {
                 .addStatement(StrUtil.lowerFirst(className) + " = " + StrUtil.lowerFirst(className) + "Repository.save(" + StrUtil.lowerFirst(className) + ")")
                 .addStatement("return $T.copyProperties(" + StrUtil.lowerFirst(className) + ", $T.class)", BeanUtil.class, addVO)
                 .build();
+        MethodSpec edit = MethodSpec.methodBuilder("edit")
+                .addModifiers(Modifier.PUBLIC)
+                .returns(editVO)
+                .addParameter(editDTO, StrUtil.lowerFirst(className) + "editDTO")
+                .addStatement(className + " " + StrUtil.lowerFirst(className) + " = " + StrUtil.lowerFirst(className) + "Repository.findById()", BeanUtil.class, entity)
+                .addStatement(className + " " + StrUtil.lowerFirst(className) + " = $T.copyProperties(" + StrUtil.lowerFirst(className) + "AddDTO" + ", $T.class)", BeanUtil.class, entity)
+                .addStatement(StrUtil.lowerFirst(className) + " = " + StrUtil.lowerFirst(className) + "Repository.save(" + StrUtil.lowerFirst(className) + ")")
+                .addStatement("return $T.copyProperties(" + StrUtil.lowerFirst(className) + ", $T.class)", BeanUtil.class, addVO)
+                .build();
         TypeSpec service = TypeSpec.classBuilder(className + "Service")
                 .addModifiers(Modifier.PUBLIC)
                 .addAnnotation(Service.class)
