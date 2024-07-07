@@ -16,13 +16,11 @@ public class AuditConfig {
 
     @Bean
     AuditorAware<String> auditorProvider() {
-// Implement logic to provide current auditor (user)
         return new AuditorAwareImpl();
     }
 
     @Bean
     public DateTimeProvider dateTimeProvider() {
-        // Implement logic to provide current date and time
         return () -> Optional.of(LocalDateTime.now());
     }
 

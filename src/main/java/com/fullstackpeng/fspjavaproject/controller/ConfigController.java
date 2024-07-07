@@ -1,18 +1,13 @@
 package com.fullstackpeng.fspjavaproject.controller;
 
-import com.fullstackpeng.fspjavaproject.domain.config.ConfigService;
-import com.fullstackpeng.fspjavaproject.domain.config.dto.ConfigAddDTO;
-import com.fullstackpeng.fspjavaproject.domain.config.dto.ConfigEditDTO;
-import com.fullstackpeng.fspjavaproject.domain.config.dto.ConfigListDTO;
-import com.fullstackpeng.fspjavaproject.domain.config.dto.ConfigPageDTO;
-import com.fullstackpeng.fspjavaproject.domain.config.vo.*;
-import com.fullstackpeng.fspjavaproject.infrastructure.common.domain.TableVO;
-import jakarta.annotation.Resource;
+import com.fullstackpeng.fspjavaproject.infrastructure.common.domain.PageDTO;
+import com.fullstackpeng.fspjavaproject.infrastructure.dao.config.Config;
+import com.fullstackpeng.fspjavaproject.infrastructure.dao.config.ConfigRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -25,42 +20,50 @@ import java.util.List;
  **/
 @RestController
 @RequestMapping("config/v1")
+@RequiredArgsConstructor
 public class ConfigController {
-    @Resource
-    private ConfigService configService;
+    private final ConfigRepository configRepository;
 
     @PostMapping("add")
-    public ResponseEntity<ConfigAddVO> add(@RequestBody ConfigAddDTO configAddDTO) {
-        return ResponseEntity.ok(configService.add(configAddDTO));
+    public ResponseEntity<Config> add(@RequestBody Config config) {
+        return ResponseEntity.ok(configRepository.save(config));
     }
 
     @PostMapping("edit")
-    public ResponseEntity<ConfigEditVO> edit(@RequestBody ConfigEditDTO configEditDTO) {
-        return ResponseEntity.ok(configService.edit(configEditDTO));
+    public ResponseEntity<Config> edit(@RequestBody Config configEditDTO) {
+        return ResponseEntity.ok(configRepository.save(configEditDTO));
     }
 
     @PostMapping("delete")
-    public ResponseEntity<ConfigDeleteVO> delete(@RequestBody Long id) {
-        return ResponseEntity.ok(configService.delete(id));
+    public ResponseEntity<Void> delete(@RequestBody Long id) {
+        configRepository.deleteById(id);
+        return ResponseEntity.ok(null);
     }
 
     @PostMapping("logicDelete")
-    public ResponseEntity<ConfigDeleteVO> logicDelete(@RequestBody Long id) {
-        return ResponseEntity.ok(configService.logicDelete(id));
+    public ResponseEntity<Void> logicDelete(@RequestBody Long id) {
+        configRepository.updateDeletedById(id);
+        return ResponseEntity.ok(null);
     }
 
-    @PostMapping("get")
-    public ResponseEntity<ConfigGetVO> get(@RequestBody Long id) {
-        return ResponseEntity.ok(configService.get(id));
+    @GetMapping("get/{id}")
+    public ResponseEntity<Config> get(@PathVariable Long id) {
+        return ResponseEntity.ok(configRepository.getReferenceById(id));
+    }
+
+    @PostMapping("getByKey/{key}")
+    public ResponseEntity<Config> getByKey(@PathVariable String key) {
+        return ResponseEntity.ok(configRepository.findFirstByConfigKeyOrderByIdAsc(key));
     }
 
     @PostMapping("list")
-    public ResponseEntity<List<ConfigListVO>> list(@RequestBody ConfigListDTO configListDTO) {
-        return ResponseEntity.ok(configService.list(configListDTO));
+    public ResponseEntity<List<Config>> list() {
+        return ResponseEntity.ok(configRepository.findAll());
     }
 
     @PostMapping("page")
-    public ResponseEntity<TableVO<ConfigPageVO>> page(@RequestBody ConfigPageDTO configPageDTO) {
-        return ResponseEntity.ok(configService.page(configPageDTO));
+    public ResponseEntity<Page<Config>> page(@RequestBody PageDTO pageDTO) {
+        Page<Config> all = configRepository.findAll(PageRequest.of(pageDTO.getPageNum(), pageDTO.getPageSize()));
+        return ResponseEntity.ok(all);
     }
 }

@@ -12,15 +12,10 @@ public class AuditorAwareImpl implements AuditorAware<String> {
     @Override
     public Optional<String> getCurrentAuditor() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (Objects.isNull(authentication)){
+        if (Objects.isNull(authentication)) {
             return Optional.of("System");
         }
-//        if (authentication.getPrincipal() instanceof JwtUser jwtUser) {
-//            return Optional.ofNullable(jwtUser.getUserAccountId().toString());
-//        } else {
-//            return Optional.of(authentication.getName());
-//        }
-        return Optional.of(authentication.getName());
+        return Optional.of((String) authentication.getPrincipal());
     }
 
 }
