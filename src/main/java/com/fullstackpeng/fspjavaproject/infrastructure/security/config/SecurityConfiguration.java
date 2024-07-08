@@ -1,5 +1,6 @@
 package com.fullstackpeng.fspjavaproject.infrastructure.security.config;
 
+import com.fullstackpeng.fspjavaproject.infrastructure.security.authorization.JwtAuthenticationTokenFilter;
 import com.fullstackpeng.fspjavaproject.infrastructure.security.entrypoint.CustomerAuthenticationEntryPoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import static com.fullstackpeng.fspjavaproject.infrastructure.security.authentication.admin.password.AdminPassConfigurer.adminPassConfigurer;
 import static com.fullstackpeng.fspjavaproject.infrastructure.security.authentication.admin.sms.AdminSmsConfigurer.adminSmsConfigurer;
@@ -66,9 +68,15 @@ public class SecurityConfiguration {
 //        return http.build();
 //    }
 
+    public JwtAuthenticationTokenFilter authenticationTokenFilterBean() throws Exception {
+        return new JwtAuthenticationTokenFilter();
+    }
+
+
     @Bean
     public SecurityFilterChain adminSecurityFilterChain(HttpSecurity http) throws Exception {
         http
+                .addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class)
                 .with(adminPassConfigurer(), Customizer.withDefaults())
                 .with(adminSmsConfigurer(), Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
