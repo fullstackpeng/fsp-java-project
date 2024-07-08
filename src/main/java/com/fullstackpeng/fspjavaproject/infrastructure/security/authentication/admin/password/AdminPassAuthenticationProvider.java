@@ -41,6 +41,7 @@ public class AdminPassAuthenticationProvider implements
             throw new BadCredentialsException(AuthErrorMsg.passwordIncorrect.getName());
         } else {
             BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+//            System.out.println(bCryptPasswordEncoder.encode(adminUsernamePasswordToken.getPassword()));
             boolean matches = bCryptPasswordEncoder.matches(adminUsernamePasswordToken.getPassword(), adminUser.get().getPassword());
             if (matches) {
                 String token = tokenService.buildToken(adminUsernamePasswordToken.getUsername());
